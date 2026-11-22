@@ -13,7 +13,7 @@ Daily energy-generation forecasting for two co-located solar plants at the Bui P
 
 The architecture is **asymmetric**: the land model is slightly deeper (an extra dense layer, lighter dropout) because land generation is the more stable system. The floating model is shallower with heavier dropout because its output is noisier and needs more regularisation.
 
-## A Note on Units: Why the Peak Is ~250 MWh, Not 50 MW
+## A Note on Units
 
 The 50 MW figure is the plant's **rated power capacity** (an instantaneous rate). This model forecasts **daily energy generation in MWh** (power accumulated over time). With roughly five effective peak sun hours per day, after accounting for system losses, a 50 MW plant produces about:
 
