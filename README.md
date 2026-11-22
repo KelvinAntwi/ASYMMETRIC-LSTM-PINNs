@@ -46,7 +46,7 @@ E_physics = max( η_cal · G · (1 + α · (T − T_STC)), 0 )
 ```
 
 - `G`: global irradiation, `T`: daily max temperature
-- `T_STC = 25 °C`, `α = −0.004 /°C` (crystalline-silicon power temperature coefficient)
+- `T_STC = 25 °C`, `α = −0.0035 /°C` (crystalline-silicon power temperature coefficient)
 - `η_cal`: median `energy / irradiation` ratio, calibrated on **training data only**
 
 The training loss combines a data term with a physics term:
@@ -65,10 +65,10 @@ The physics term acts as a soft prior that pulls predictions toward physically p
 - **Callbacks:** EarlyStopping (patience 15, restores best weights), ReduceLROnPlateau (factor 0.5, patience 6)
 - **Seed selection:** each plant model is trained with seeds `[1, 2, 3, 42, 100]`, and the seed with the best **validation** R² is kept
 
-| Plant | Best seed val R² |
-|---|---|
-| Land | 0.8828 (seed 42) |
-| Floating | 0.8606 (seed 3) |
+| Plant | Selected seed | Val R² | Val R² range across seeds |
+|---|---|---|---|
+| Land | 100 | 0.8296 | 0.0993 – 0.8296 |
+| Floating | 2 | 0.8482 | 0.6049 – 0.8482 |
 
 ## Results
 
@@ -76,17 +76,17 @@ Metrics below are computed on **MinMax-normalised** targets (0–1), not raw MWh
 
 | Plant | Split | R² | RMSE | MAE |
 |---|---|---|---|---|
-| Land | Train | 0.9092 | 0.0617 | 0.0480 |
-| Land | Test | 0.7040 | 0.0938 | 0.0821 |
-| Floating | Train | 0.9395 | 0.0500 | 0.0385 |
-| Floating | Test | 0.8935 | 0.0807 | 0.0592 |
+| Land | Train | 0.9335 | 0.0528 | 0.0411 |
+| Land | Test | 0.8709 | 0.0620 | 0.0428 |
+| Floating | Train | 0.9370 | 0.0510 | 0.0387 |
+| Floating | Test | 0.9194 | 0.0702 | 0.0499 |
 
 The notebook also produces actual-vs-predicted plots in MWh, residual scatter and histograms, and training/validation loss curves for both plants.
 
 ## Limitations
 
 - Each sample is a **single day** (input shape `(1, 11)`), so the LSTM does not see a multi-day history. Temporal context comes only from the `Lag1` feature.
-- The land model shows a larger train-to-test gap (R² 0.91 → 0.70) than the floating model, suggesting some overfitting on the smaller land dataset.
+- Results are **sensitive to the random seed** (validation R² varies widely across seeds, especially for land), so the reported models are the best of five runs chosen on validation data.
 - Reported metrics are on normalised values; MWh-scale errors would need to be reported separately.
 
 ## Requirements
